@@ -1,0 +1,12 @@
+{
+  "name": "upscale",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^1.2.9",
+    "canvas": "^2.6.0",
+    "get-pixels": "^3.3.2",
+    "image-to-slices": "^0.1.3"
+  }
+}
