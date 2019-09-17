@@ -33,7 +33,7 @@ const getSquares = async(path, squareSize)=>{
 };
 
 
-async function getInpOut(first, second, res){
+async function getInpOutRGB(first, second, res){
     let data = [];
     const inputs = await getSquares(first, res);
     const outputs = await getSquares(second, res*2);
@@ -49,7 +49,38 @@ async function getInpOut(first, second, res){
 }
 
 
+async function getInpOut(first, second, res){
+    let data = [];
+    const inputs = await getSquares(first, res);
+    const outputs = await getSquares(second, res*2);
+    for (var key in inputs) {
+        let newInput = [];
+        const input = inputs[key];
+        for (let i = 0; i < input.length; i++) {
+            const dps = input[i];
+            for (let index = 0; index < dps.length; index++) {
+                const dp = dps[index];
+                newInput.push(dp);
+            }
+        }
+        const output = outputs[key];
+        let newOutput = [];
+        for (let i = 0; i < output.length; i++) {
+            const dps = output[i];
+            for (let index = 0; index < dps.length; index++) {
+                const dp = dps[index];
+                newOutput.push(dp);
+            }
+        }
+        data.push({name:key, input: tf.tensor([newInput]), output: newOutput});
+     }
+
+    return data
+}
+
+
 module.exports = {
     getSquares,
-    getInpOut
+    getInpOut,
+    getInpOutRGB
 }

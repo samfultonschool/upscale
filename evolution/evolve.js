@@ -54,12 +54,22 @@ class Agent{
             this.neurons = this.model.getWeights();
     }
 
-    createModel(){
+    create2dModel(){
         const model = tf.sequential({
             layers: [
               tf.layers.dense({inputShape: [4], units:  8, activation: 'relu'}),
               tf.layers.dense({units: 16, activation: 'relu'}),
               tf.layers.reshape({targetShape: [4,4]})
+            ]
+           });
+        return model
+    }
+
+    createModel(){
+        const model = tf.sequential({
+            layers: [
+              tf.layers.dense({inputShape: [1600], units:  3200, activation: 'relu'}),
+              tf.layers.dense({units: 6400, activation: 'relu'}),
             ]
            });
         return model
