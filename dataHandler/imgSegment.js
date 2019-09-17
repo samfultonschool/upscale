@@ -6,7 +6,6 @@ const tf = require('@tensorflow/tfjs-node');
 
 const getSquares = async(path, squareSize)=>{
     let pixels = await getPixels(path);
-    console.log("got pixels", pixels.shape.slice())
 
     const rgbPixels = pixels.data.reduce((accumulator, pixel, index) => {
         if (index > 0 && index % 4 === 0) {

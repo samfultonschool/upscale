@@ -7,7 +7,7 @@ class Pool{
     constructor({numberOfAgents}){
         return (async () => {
             this.agents = await this.createAgents(numberOfAgents);
-            this.bestAgent = {weights: undefined, score:0};
+            this.bestAgent = {weights: undefined, score:-10000000000000};
             return this
         })();
     }
@@ -31,14 +31,28 @@ class Pool{
                 agent.score += await this.evalScore(prediction, dataPoint.output);
             }
         }
+        let scores = [];
+        for (let index = 0; index < this.agents.length; index++) {
+            const agent = this.agents[index];
+            if(agent.score > this.bestAgent.score){this.bestAgent = agent}
+            scores.push(agent.score);
+        }
+        console.table(scores);
     }
 
     async evalScore(prediction, realOutput){
-        
+        let score = 0;
+        for (let index = 0; index < prediction.length; index++) {
+            let additive = realOutput[index] - prediction[index];
+            if(additive>0)additive = additive*-1;
+            score += additive;
+        }
+        return score;
     }
 
-
-
+    async evolve(){
+        
+    }
 }
 
 
@@ -77,7 +91,7 @@ class Agent{
 
     async predict(input){
         return tf.tidy(()=>{
-            return (this.model.predict(input)).arraySync();
+            return ((this.model.predict(input)).arraySync())[0];
         });
     }
 
