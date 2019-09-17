@@ -14,3 +14,4 @@ const getInpOut = require('./dataHandler/imgSegment.js').getInpOut;
 
 
 
+// Think about feeding in all values not in arrays
