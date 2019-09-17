@@ -7,7 +7,7 @@ class Pool{
     constructor({numberOfAgents}){
         return (async () => {
             this.agents = await this.createAgents(numberOfAgents);
-            this.bestAgent = {weights: undefined, score:-10000000000000};
+            this.bestAgent = {weights: undefined, score:-10000000000000000000000000000};
             return this
         })();
     }
@@ -16,7 +16,7 @@ class Pool{
         console.log('Creating Agents...');
         let agents = []
         for (let index = 0; index < numberOfAgents; index++) {
-            agents.push(new Agent());
+            agents.push(await new Agent());
         }
         console.log("Agents Created");
         return agents
@@ -38,6 +38,7 @@ class Pool{
             scores.push(agent.score);
         }
         console.table(scores);
+        console.log('Best Score:', this.bestAgent.score);
     }
 
     async evalScore(prediction, realOutput){
@@ -50,8 +51,22 @@ class Pool{
         return score;
     }
 
-    async evolve(){
-        
+
+    async mutate(){
+        for (let index = 0; index < this.agents.length; index++) {
+            const agent = this.agents[index];
+            await agent.newMutatedBrain(this.bestAgent.neurons);
+            agent.neurons = agent.model.getWeights();
+            agent.score = 0;
+        }
+    }
+
+    async evolve(data, desiredScore){
+        await this.runAgents(data);
+        while(this.bestAgent.score < desiredScore){
+            await this.mutate();
+            await this.runAgents(data);
+        }
     }
 }
 
@@ -63,9 +78,12 @@ class Pool{
 class Agent{
 
     constructor(){
+        return (async () => {
             this.score = 0;
-            this.model = this.createModel();
+            this.model = await this.createModel();
             this.neurons = this.model.getWeights();
+            return this
+        })();
     }
 
     create2dModel(){
@@ -79,7 +97,7 @@ class Agent{
         return model
     }
 
-    createModel(){
+    async createModel(){
         const model = tf.sequential({
             layers: [
               tf.layers.dense({inputShape: [1600], units:  3200, activation: 'relu'}),
@@ -95,8 +113,28 @@ class Agent{
         });
     }
 
-    async edit(newBrain){
+    mutateBrain(){
 
+    }
+
+    newMutatedBrain(weights){
+        const mutatedWeights = [];
+        for (let index = 0; index < weights.length; index++) {
+            let tensor = weights[index];
+            let shape = weights[index].shape;
+            let values = tensor.dataSync().slice();
+            for (let i = 0; i < values.length; i++) {
+                if(Math.random() < .01){
+                    let w = values[i];
+                    let newValue = w + (Math.random() * .08);
+                    if(Math.random()>.5){newValue = newValue*-1}
+                    values[i] = newValue ;
+                }
+            }
+            let newTensor = tf.tensor(values, shape);
+            mutatedWeights[index] = newTensor;
+        }
+        this.model.setWeights(mutatedWeights);
     }
 
 };
