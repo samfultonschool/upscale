@@ -1,16 +1,16 @@
 const Pool = require('./evolution/evolve.js').Pool;
-const getSquares = require('./dataHandler/imgSegment.js').getSquares;
+const getInpOut = require('./dataHandler/imgSegment.js').getInpOut;
 
 
 (async()=>{
-    const inputs = await getSquares('./data/cup-start.png', 20);
-    const outputs = await getSquares('./data/cup-end.png', 40);
-    console.log('Inputs:', inputs.length, 'Outputs:', outputs.length );
-    debugger
+   let data = await getInpOut('./data/cup-start.png','./data/cup-end.png', 20);
+   const pool = await new Pool({numberOfAgents:1});
+   let prediction = await pool.agents[0].predict(data[0].input);
+   console.log(prediction);
+   debugger;
+    // console.log('Inputs:', inputs, 'Outputs:', outputs );
 })();
 
 
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+

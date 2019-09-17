@@ -57,15 +57,18 @@ class Agent{
     createModel(){
         const model = tf.sequential({
             layers: [
-              tf.layers.dense({inputShape: [300], units: 600, activation: 'relu'}),
-              tf.layers.dense({units: 600, activation: 'relu'}),
+              tf.layers.dense({inputShape: [4], units:  8, activation: 'relu'}),
+              tf.layers.dense({units: 16, activation: 'relu'}),
+              tf.layers.reshape({targetShape: [4,4]})
             ]
            });
         return model
     }
 
     async predict(input){
-
+        return tf.tidy(()=>{
+            return (this.model.predict(input)).arraySync();
+        });
     }
 
     async edit(newBrain){

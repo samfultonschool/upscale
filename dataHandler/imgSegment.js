@@ -1,6 +1,7 @@
 const fs = require('fs');
 const util = require('util');
 const getPixels = util.promisify(require("get-pixels"));
+const tf = require('@tensorflow/tfjs-node');
 
 
 const getSquares = async(path, squareSize)=>{
@@ -11,7 +12,7 @@ const getSquares = async(path, squareSize)=>{
         if (index > 0 && index % 4 === 0) {
             accumulator.push([])
         }
-        accumulator[accumulator.length - 1].push(pixel);
+        accumulator[accumulator.length - 1].push(pixel/255);
         return accumulator;
     }, [[]]);
 
@@ -32,7 +33,23 @@ const getSquares = async(path, squareSize)=>{
 };
 
 
+async function getInpOut(first, second, res){
+    let data = [];
+    const inputs = await getSquares(first, res);
+    const outputs = await getSquares(second, res*2);
+    for (var key in inputs) {
+        const input = tf.tensor(inputs[key]);
+        const output = outputs[key];
+        data.push({name:key, input, output});
+        // for (var prop in obj) {
+        //    alert(prop + " = " + obj[prop]);
+        // }
+     }
+     return data;
+}
+
 
 module.exports = {
-    getSquares
+    getSquares,
+    getInpOut
 }
